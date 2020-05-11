@@ -1,6 +1,6 @@
-# Lab9_202010
+# Proyecto Final
 
-Este repositorio contiene una plantilla del laboratorio 9 con un ejemplo de un ADT grafo dirigido que está implementado con listas de adyacencias. La aplicación está construida bajo el patrón Modelo-Vista-Controlador que carga datos y realiza consultas usando las estructuras de datos implementadas. Para iniciar la aplicación debe ejecutar: 
+Este repositorio contiene el proyecto final del curso de Estructuras de Datos de la Universidad de los Andes. Para iniciar la aplicación debe ejecutar: 
 ```
 python App/view.py
 ```
