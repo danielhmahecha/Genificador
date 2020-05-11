@@ -25,6 +25,7 @@ from ADT import list as lt
 from ADT import graph as g
 from ADT import map as map
 from ADT import list as lt
+from Sorting import mergesort 
 from DataStructures import listiterator as it
 from datetime import datetime
 from DataStructures import dijkstra as dk
@@ -43,11 +44,54 @@ def newCatalog():
     """
     Inicializa el catálogo y retorna el catalogo inicializado.
     """
-    rgraph = g.newGraph(111353,compareByKey)
-    tgraph = g.newGraph(111353,compareByKey,True)
-    catalog = {'non_directed_Graph':rgraph, 'directed_Graph':tgraph}    
+    #Creamos un mapa de ciudades
+    cityStationsMap = map.newMap(capacity=5, prime=3,maptype='CHAINING',comparefunction=compareByKey)
+    #Creamos un mapa de nombres de estaciones indexadas por Id de estación, para facilitar la carga de los datos de los otros archivos
+    stationIdName = map.newMap(capacity=70, prime=37, maptype='CHAINING',comparefunction=compareByKey)
+    
+    #Se crea el catálogo
+    catalog = {'cities':cityStationsMap, 'stationIds': stationIdName}    
     return catalog
     
+def addCityStations (catalog, row):
+    #Vamos actualizando el mapa de ciudades, añadiendo la estación a la ciudad respectiva
+    cityStationsMap = catalog['cities']
+    station = {'id': row['id'], 'name': row['name'], 'dock_count': row['dock_count']}
+    if  map.contains(cityStationsMap,row['city']) == False:
+        stationsList = lt.newList(datastructure='ARRAY_LIST')
+        lt.addLast(stationsList,station) 
+        map.put(cityStationsMap,row['city'],stationsList)
+    if map.contains(cityStationsMap,row['city']) == True:
+        stationsList = map.get(cityStationsMap,row['city']) ['value']
+        lt.addLast(stationsList,station) 
+        map.put(cityStationsMap,row['city'],stationsList)  
+
+    #Añadimos la estación al mapa de ids y nombres de las estaciones
+    stationsIdName = catalog['stationIds']
+    map.put(stationsIdName,row['id'],row['name'])
+
+def stationsByDockCount(catalog, city):
+    try:
+        ans = lt.newList()
+        cityStationsMap = catalog['cities']
+        stationsList = map.get(cityStationsMap,city)['value']
+        c=1
+        while c<=3:
+            station=lt.getElement(stationsList,c)
+            element={'Nombre': station['name'], 'Dock Count': station['dock_count']}
+            lt.addLast(ans,element)
+            c+=1
+        return ans
+    except: print('Ciudad no encontrada')
+def sortCityStations(catalog):
+    #Iteramos sobre toda las ciudades para ir ordenando las listas de estaciones por dock_count
+    cityStationsMap = catalog['cities']
+    citiesList = map.keySet(cityStationsMap)
+    citiesIterator = it.newIterator(citiesList)
+    while it.hasNext(citiesIterator):
+        city = it.next(citiesIterator)
+        stationsList = map.get(cityStationsMap,city)['value']
+        mergesort.mergesort(stationsList,compareDockCountGreater)
 
 def addReviewNode_non_directed (catalog, row):
     """
@@ -158,6 +202,10 @@ def getShortestPath (catalog, source, dst):
    # return None
     
 # Funciones de comparacion
+def compareDockCountGreater( element1, element2):
+        if int(element1['dock_count']) >  int(element2['dock_count']):
+            return True
+        return False
 
 def compareByKey (key, element):
     return  (key == element['key'] )  

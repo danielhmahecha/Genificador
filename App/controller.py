@@ -2,7 +2,7 @@
  * Copyright 2020, Departamento de sistemas y Computación, Universidad de Los Andes
  * 
  *
- * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
+ * Adaptado del desarrollo para el curso ISIS1225 - Estructuras de Datos y Algoritmos
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -42,48 +42,39 @@ def printList (lst):
     iterator = it.newIterator(lst)
     while  it.hasNext(iterator):
         element = it.next(iterator)
-        result = "".join(str(key) + ": " + str(value) + ",  " for key, value in element.items())
+        result = "".join(str(key) + ": " + str(value) + ". " for key, value in element.items())
         print (result)
 
 
 # Funciones para la carga de datos 
 
-def load_non_directed (catalog):
+def loadStationsFile (catalog):
     """
-    Carga las bibliotecas del archivo.
-    Por cada para de bibliotecas, se almacena la distancia en kilometros entre ellas.
+    Carga las estaciones del archivo.
+    Se almacena un mapa de estaciones indexado por el id de estación. Se almacena un mapa de ciudades con sus respectivas estaciones.
     """
     t1_start = process_time() #tiempo inicial
-    libsFile = cf.data_dir + 'flights_edges.csv'
+    stationsFile = cf.data_dir + 'bikes_data/station.csv'
     dialect = csv.excel()
-    dialect.delimiter=';'
-    with open(libsFile, encoding="utf-8-sig") as csvfile:
+    dialect.delimiter=','
+    with open(stationsFile, encoding="utf-8-sig") as csvfile:
         spamreader = csv.DictReader(csvfile, dialect=dialect)
         for row in spamreader:
             #print(row)
-            model.addReviewNode_non_directed (catalog, row)
-            model.addReviewEdge_non_directed (catalog, row)
-    t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución carga de grafo no dirigido de vuelos:",t1_stop-t1_start," segundos")   
-def load_directed (catalog):
-    """
-    Carga las bibliotecas del archivo.
-    Por cada para de bibliotecas, se almacena la distancia en kilometros entre ellas.
-    """
-    t1_start = process_time() #tiempo inicial
-    libsFile = cf.data_dir + 'flights_edges_directed.csv'
-    dialect = csv.excel()
-    dialect.delimiter=';'
-    with open(libsFile, encoding="utf-8-sig") as csvfile:
-        spamreader = csv.DictReader(csvfile, dialect=dialect)
-        for row in spamreader:
-            #print(row)
-            model.addReviewNode_directed (catalog, row)
-            model.addReviewEdge_directed (catalog, row)
-    t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución carga de grafo dirigido de vuelos:",t1_stop-t1_start," segundos") 
+            model.addCityStations(catalog, row)        
+    model.sortCityStations(catalog)
 
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución carga archivo estaciones:",t1_stop-t1_start," segundos")   
 
+def stationsByDockCount(catalog, city):
+    t1_start = process_time()
+    try:
+        stations=model.stationsByDockCount(catalog, city)
+        printList(stations)
+    except: print('Verifique el nombre de la ciudad')
+    t1_stop = process_time()
+    print("Tiempo de ejecución estaciones con más parqueos por ciudad:",t1_stop-t1_start," segundos")  
 
 def initCatalog ():
     """
@@ -98,8 +89,8 @@ def loadData (catalog):
     """
     Carga los datos de los archivos en la estructura de datos
     """
-    load_non_directed(catalog)    
-    load_directed(catalog)
+    loadStationsFile(catalog)    
+    
 
 # Funciones llamadas desde la vista y enviadas al modelo
 

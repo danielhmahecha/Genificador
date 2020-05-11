@@ -42,11 +42,11 @@ operación solicitada
 def printMenu():
     print("Bienvenido al Laboratorio 9")
     print("1- Cargar información")
-    print("2- Contar nodos y enlances cargados ")
-    print("3- Cantidad de componentes conectados (req 1)")
-    print("4- Ruta entre dos aereopuertos (req 2)")
-    print("5- Ruta mas corta entre dos aereopuertos (req 3)")
-    print("6- Ruta de menor tiempo de vuelo entre dos aereopuertos (req 4)")
+    print("2- Req 1 ")
+    print("3- Req 2")
+    print("4- Req 3")
+    print("5- Req 4")
+    print("6- Nada")
     print("0- Salir")
 
 
@@ -76,10 +76,9 @@ def main():
             catalog = initCatalog ()
             loadData (catalog)
         elif int(inputs[0])==2:
-            verticesNum, edgesNum = controller.countNodesEdges_non_directed(catalog) 
-            print("El grafo no dirigido tiene: ", verticesNum," nodos y", edgesNum," enlaces")
-            verticesNum, edgesNum = controller.countNodesEdges_directed(catalog) 
-            print("El grafo no dirigido tiene: ", verticesNum," nodos y", edgesNum," enlaces")
+            city = input('Ingrese nombre de la ciudad: ')
+            controller.stationsByDockCount(catalog, city)
+            
         elif int(inputs[0])==3:
             com_con=controller.countConnectedComponents(catalog)
             print('El grafo tiene: ',com_con,"componentes conectados")
