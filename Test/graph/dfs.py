@@ -97,39 +97,10 @@ def nextPrime(N):
 
 
 def comparenames (searchname, element):
+    
     return (searchname == element['key'])
 
 
-if __name__ ==  "__main__" :
-    graph = g.newGraph(7,comparenames,False)
 
-    g.insertVertex (graph, 'Bogota')
-    g.insertVertex (graph, 'Yopal')
-    g.insertVertex (graph, 'Cali')
-    g.insertVertex (graph, 'Medellin')
-    g.insertVertex (graph, 'Pasto')
-    g.insertVertex (graph, 'Barranquilla')
-    g.insertVertex (graph, 'Manizales')
-    
-    g.insertVertex (graph, 'Cucuta')
-    g.insertVertex (graph, 'Bucaramanga')
-
-
-    g.addEdge (graph, 'Bogota', 'Yopal', 1 )
-    g.addEdge (graph, 'Bogota', 'Medellin', 1 )
-    g.addEdge (graph, 'Bogota', 'Pasto', 1 )
-    g.addEdge (graph, 'Bogota', 'Cali', 1 )
-    g.addEdge (graph, 'Yopal', 'Medellin', 1 )
-    g.addEdge (graph, 'Medellin', 'Pasto', 1 )
-    g.addEdge (graph, 'Cali', 'Pasto', 1 )
-    g.addEdge (graph, 'Cali', 'Barranquilla', 1 )
-    g.addEdge (graph, 'Barranquilla','Manizales', 1 )
-    g.addEdge (graph, 'Pasto','Manizales', 1 )
-    g.addEdge (graph, 'Cucuta','Bucaramanga', 1 )
-
-    search = newDFS(graph,'Bogota')
-    
-    print ('A Cali', hasPathTo(search, 'Cali'))
-    print ('A Cucuta', hasPathTo(search,'Cucuta'))
-    pathManizales= pathTo(search,'Manizales')
-    print('DSF::roadToManizales',pathManizales)
+if __name__ ==  "__main__" 
+   
