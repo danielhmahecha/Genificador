@@ -109,15 +109,18 @@ def addDate_city_trips(catalog,row):
     # Añadimos las fechas al RBT con un value igual a un map con ciudad y values =  cantidad de viajes
 
     d = row['start_date'] # row del archivo trip.csv 
-    date = strToDate(d,'%m-%d-%Y')
+    date = strToDate(d[0:8],'%m-%d-%Y')
     id_station = row['start_station_id']
     city_trip = tree.get(catalog['date_city_trips'],date,greater)
-    print(city_trip)
+    #print(city_trip)
     city = station_id_city(catalog,id_station)
-    if city_trip:
-        u = map.get(city_trip,city)['value']  
-        u += 1
-        map.put(city_trip,city,u)
+    if city_trip :
+        if map.contains(city_trip,city):
+            u = map.get(city_trip,city)['value']  
+            u += 1
+            map.put(city_trip,city,u)
+        else :
+            map.put(city_trip,city,1)
     else :
         city_trip = map.newMap(capacity= 5, prime=3,maptype='CHAINING', comparefunction = compareByKey)
         map.put(city_trip,city,1)
@@ -127,25 +130,26 @@ def trips_per_dates (catalog, init_date, last_date):
     # Esta es la que usamos para responder el req 2 , se devulve un dict con llaves = ciudades y value = suma de todas las cantidades
 
     response = {}
-    date_1 = strToDate(init_date, '%m-%d-%Y')
-    date_2 = strToDate(last_date, '%m-%d-%Y')
+    date_1 = strToDate(init_date[0:10], '%m-%d-%Y')
+    date_2 = strToDate(last_date[0:10], '%m-%d-%Y')
+    range_list = tree.valueRange(catalog['date_city_trips'],date_1,date_2,greater)
+    #print(range_list)
+    #print(type(range_list))
     iterator_range = it.newIterator(range_list)
     while it.hasNext(iterator_range):
         Element = it.next(iterator_range)
-        key = tree.get(catalog['date_city_trips'],Element,compareByKey)['value']
-        k_lst = map.keySet(key)
-        iterator_key = it.newIterator(k_lst)
-        while it.hasNext(iterator_key):
-            f_key = it.next(iterator_key) 
-            city = map.get(Element,f_key)
-            v = city['value']
-            f = city['key']
-            if f in response :
-                r = response[f]
-                w = r + v
-                response[f] = w
+        elkeys=map.keySet(Element)
+        iterator_keys = it.newIterator(elkeys)
+        while it.hasNext(iterator_keys):
+            city = it.next(iterator_keys) 
+            count = map.get(Element,city)
+            if city in response :
+                r = response[city]
+                w = r + count
+                response[city] = w
             else :
-                response[f] = v 
+                response[city] = count
+                
     return response
 
 
