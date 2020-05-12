@@ -65,7 +65,19 @@ def loadStationsFile (catalog):
     model.sortCityStations(catalog)
 
     t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución carga archivo estaciones:",t1_stop-t1_start," segundos")   
+    print("Tiempo de ejecución carga archivo estaciones:",t1_stop-t1_start," segundos")  
+ 
+def load_tripFile (catalog):
+    t1_start = process_time() #tiempo inicial
+    stationsFile = cf.data_dir + 'bikes_data/trip.csv'
+    dialect = csv.excel()
+    dialect.delimiter=','
+    with open(stationsFile, encoding="utf-8-sig") as csvfile:
+        spamreader = csv.DictReader(csvfile, dialect=dialect)
+        for row in spamreader:
+            model.addDate_city_trips(catalog, row)        
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución carga archivo viajes :",t1_stop-t1_start," segundos") 
 
 def stationsByDockCount(catalog, city):
     t1_start = process_time()
@@ -75,6 +87,14 @@ def stationsByDockCount(catalog, city):
     except: print('Verifique el nombre de la ciudad')
     t1_stop = process_time()
     print("Tiempo de ejecución estaciones con más parqueos por ciudad:",t1_stop-t1_start," segundos")  
+
+def trips_per_dates(catalog,init,last):
+    t1_start = process_time()
+    s = model.trips_per_dates(catalog,init,last)
+    t1_stop = process_time()
+    print("Tiempo de ejecución cantidad de viajes por ciudad entre fechas :",t1_stop-t1_start," segundos")
+    return s 
+
 
 def initCatalog ():
     """
@@ -89,7 +109,8 @@ def loadData (catalog):
     """
     Carga los datos de los archivos en la estructura de datos
     """
-    loadStationsFile(catalog)    
+    loadStationsFile(catalog)  
+    load_tripFile(catalog)
     
 
 # Funciones llamadas desde la vista y enviadas al modelo

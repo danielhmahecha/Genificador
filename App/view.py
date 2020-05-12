@@ -80,8 +80,12 @@ def main():
             controller.stationsByDockCount(catalog, city)
             
         elif int(inputs[0])==3:
-            com_con=controller.countConnectedComponents(catalog)
-            print('El grafo tiene: ',com_con,"componentes conectados")
+            dates = input('Ingrese las fechas del intervalo (ej: 8/29/2013 1/1/2014')
+            dat1 = dates.split(" ")[0]
+            dat2 = dates.split(" ")[1]
+            r = controller.trips_per_dates(catalog,dat1,dat2)
+            print(r)
+
         elif int(inputs[0])==4:
             vertices =input("Ingrese el vertice origen y destino (EJEMPLO: HNL-1-25 ICT-1-25 ) \n")
             lst = controller.getPath(catalog,vertices,'dfs')

@@ -27,6 +27,7 @@ from ADT import map as map
 from ADT import list as lt
 from Sorting import mergesort 
 from DataStructures import listiterator as it
+from DataStructures import orderedmapstructure as tree
 from datetime import datetime
 from DataStructures import dijkstra as dk
 from DataStructures import dfs as dfs 
@@ -48,9 +49,10 @@ def newCatalog():
     cityStationsMap = map.newMap(capacity=5, prime=3,maptype='CHAINING',comparefunction=compareByKey)
     #Creamos un mapa de nombres de estaciones indexadas por Id de estación, para facilitar la carga de los datos de los otros archivos
     stationIdName = map.newMap(capacity=70, prime=37, maptype='CHAINING',comparefunction=compareByKey)
-    
+    #Creamos un RBT indexado por fechas, el value es un map con ciudades y cantidad de viajes
+    date_city_trips = tree.newMap('RBT')
     #Se crea el catálogo
-    catalog = {'cities':cityStationsMap, 'stationIds': stationIdName}    
+    catalog = {'cities':cityStationsMap, 'stationIds': stationIdName, 'date_city_trips':date_city_trips }    
     return catalog
     
 def addCityStations (catalog, row):
@@ -66,9 +68,10 @@ def addCityStations (catalog, row):
         lt.addLast(stationsList,station) 
         map.put(cityStationsMap,row['city'],stationsList)  
 
-    #Añadimos la estación al mapa de ids y nombres de las estaciones
+    #Añadimos la estación al mapa de ids con value de  nombres de las estaciones y su ciudad 
     stationsIdName = catalog['stationIds']
-    map.put(stationsIdName,row['id'],row['name'])
+    dicct = {'Name' : row['name'], 'City': row['city']}
+    map.put(stationsIdName,row['id'],dicct)
 
 def stationsByDockCount(catalog, city):
     try:
@@ -83,6 +86,7 @@ def stationsByDockCount(catalog, city):
             c+=1
         return ans
     except: print('Ciudad no encontrada')
+
 def sortCityStations(catalog):
     #Iteramos sobre toda las ciudades para ir ordenando las listas de estaciones por dock_count
     cityStationsMap = catalog['cities']
@@ -92,6 +96,59 @@ def sortCityStations(catalog):
         city = it.next(citiesIterator)
         stationsList = map.get(cityStationsMap,city)['value']
         mergesort.mergesort(stationsList,compareDockCountGreater)
+
+def station_id_city (catalog,station_id) :
+    # Funcion auxiliar a addDate_city_trips que me devuelve la ciudad a partir del id de una estacion 
+    stations_ids = catalog['stationIds']
+    y = map.get(stations_ids,station_id)
+    city = y['value']['City']
+    return city 
+
+
+def addDate_city_trips(catalog,row):
+    # Añadimos las fechas al RBT con un value igual a un map con ciudad y values =  cantidad de viajes
+
+    d = row['start_date'] # row del archivo trip.csv 
+    date = strToDate(d,'%m-%d-%Y')
+    id_station = row['start_station_id']
+    city_trip = tree.get(catalog['date_city_trips'],date,greater)
+    print(city_trip)
+    city = station_id_city(catalog,id_station)
+    if city_trip :
+        u = map.get(city_trip,city)['value']  
+        u += 1
+        map.put(city_trip,city,u)
+    else :
+        city_trip = map.newMap(capacity= 5, prime=3,maptype='CHAINING', comparefunction = compareByKey)
+        map.put(city_trip,city,1)
+        tree.put(catalog['date_city_trips'],date,city_trip,greater)
+
+def trips_per_dates (catalog, init_date, last_date):
+    # Esta es la que usamos para responder el req 2 , se devulve un dict con llaves = ciudades y value = suma de todas las cantidades
+
+    response = {}
+    date_1 = strToDate(init_date, '%m-%d-%Y')
+    date_2 = strToDate(last_date, '%m-%d-%Y')
+    range_list = tree.valueRange(catalog['date_city_trips'],date_1,date_2,greater)
+    iterator_range = it.newIterator(range_list)
+    while it.hasNext(range_list):
+        Element = it.next(iterator_range)
+        key = tree.get(catalog['date_city_trips'],Element,greater)['value']
+        k_lst = map.keySet(key)
+        iterator_key = it.newIterator(k_lst)
+        while it.hasNext(iterator_key):
+            f_key = it.next(iterator_key) 
+            city = map.get(Element,f_key)
+            v = city['value']
+            f = city['key']
+            if f in response :
+                r = response[f]
+                w = r + v
+                response[f] = w
+            else :
+                response[f] = v 
+    return response
+
 
 def addReviewNode_non_directed (catalog, row):
     """
@@ -208,5 +265,20 @@ def compareDockCountGreater( element1, element2):
         return False
 
 def compareByKey (key, element):
-    return  (key == element['key'] )  
+    return  (key == element['key'] ) 
 
+def greater (key1, key2):
+    if ( key1 == key2):
+        return 0
+    elif (key1 < key2):
+        return -1
+    else:
+        return 1
+
+# Funciones auxiliares 
+def strToDate(date_string, format):
+    try:
+        # date_string = '2016/05/18 13:55:26' -> format = '%Y/%m/%d %H:%M:%S')
+        return datetime.strptime(date_string,format)
+    except:
+        return datetime.strptime('1900', '%Y')
