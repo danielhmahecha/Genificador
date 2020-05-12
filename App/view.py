@@ -80,7 +80,7 @@ def main():
             controller.stationsByDockCount(catalog, city)
             
         elif int(inputs[0])==3:
-            dates = input('Ingrese las fechas del intervalo (ej: 8/29/2013 1/1/2014')
+            dates = input('Ingrese las fechas del intervalo (ej: 8/29/2013 1/1/2014) \n')
             dat1 = dates.split(" ")[0]
             dat2 = dates.split(" ")[1]
             r = controller.trips_per_dates(catalog,dat1,dat2)
