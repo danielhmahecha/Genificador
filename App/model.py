@@ -114,7 +114,7 @@ def addDate_city_trips(catalog,row):
     city_trip = tree.get(catalog['date_city_trips'],date,greater)
     print(city_trip)
     city = station_id_city(catalog,id_station)
-    if city_trip :
+    if city_trip:
         u = map.get(city_trip,city)['value']  
         u += 1
         map.put(city_trip,city,u)
@@ -129,11 +129,10 @@ def trips_per_dates (catalog, init_date, last_date):
     response = {}
     date_1 = strToDate(init_date, '%m-%d-%Y')
     date_2 = strToDate(last_date, '%m-%d-%Y')
-    range_list = tree.valueRange(catalog['date_city_trips'],date_1,date_2,greater)
     iterator_range = it.newIterator(range_list)
-    while it.hasNext(range_list):
+    while it.hasNext(iterator_range):
         Element = it.next(iterator_range)
-        key = tree.get(catalog['date_city_trips'],Element,greater)['value']
+        key = tree.get(catalog['date_city_trips'],Element,compareByKey)['value']
         k_lst = map.keySet(key)
         iterator_key = it.newIterator(k_lst)
         while it.hasNext(iterator_key):
