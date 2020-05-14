@@ -136,7 +136,7 @@ def trips_per_dates (catalog, init_date, last_date):
 
     response = {}
     date_1 = strToDate(init_date, '%m/%d/%Y')
-    date_2 = strToDate(last_date, '%m/%d/%Y')
+    date_2 = strToDate(last_date, '%m/%d%Y')
     range_list = tree.valueRange(catalog['date_city_trips'],date_1,date_2,greater)
     print('tamano arbol',tree.size(catalog['date_city_trips']))
     #print(range_list)
