@@ -109,7 +109,8 @@ def addDate_city_trips(catalog,row):
     # Añadimos las fechas al RBT con un value igual a un map con ciudad y values =  cantidad de viajes
 
     d = row['start_date'] # row del archivo trip.csv 
-    date = strToDate(d[0:8],'%m-%d-%Y')
+    t = d.split(" ")[0]
+    date = strToDate(t,'%m-%d-%Y')
     id_station = row['start_station_id']
     city_trip = tree.get(catalog['date_city_trips'],date,greater)
     #print(city_trip)
@@ -119,19 +120,22 @@ def addDate_city_trips(catalog,row):
             u = map.get(city_trip,city)['value']  
             u += 1
             map.put(city_trip,city,u)
+            catalog['date_city_trips'] = tree.put(catalog['date_city_trips'],date,city_trip,greater)
+
         else :
             map.put(city_trip,city,1)
+            catalog['date_city_trips'] = tree.put(catalog['date_city_trips'],date,city_trip,greater)
     else :
         city_trip = map.newMap(capacity= 5, prime=3,maptype='CHAINING', comparefunction = compareByKey)
         map.put(city_trip,city,1)
-        tree.put(catalog['date_city_trips'],date,city_trip,greater)
+        catalog['date_city_trips'] = tree.put(catalog['date_city_trips'],date,city_trip,greater)
 
 def trips_per_dates (catalog, init_date, last_date):
     # Esta es la que usamos para responder el req 2 , se devulve un dict con llaves = ciudades y value = suma de todas las cantidades
 
     response = {}
-    date_1 = strToDate(init_date[0:10], '%m-%d-%Y')
-    date_2 = strToDate(last_date[0:10], '%m-%d-%Y')
+    date_1 = strToDate(init_date, '%m-%d-%Y')
+    date_2 = strToDate(last_date, '%m-%d-%Y')
     range_list = tree.valueRange(catalog['date_city_trips'],date_1,date_2,greater)
     #print(range_list)
     #print(type(range_list))
