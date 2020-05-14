@@ -133,8 +133,10 @@ def trips_per_dates (catalog, init_date, last_date):
     date_1 = strToDate(init_date[0:10], '%m-%d-%Y')
     date_2 = strToDate(last_date[0:10], '%m-%d-%Y')
     range_list = tree.valueRange(catalog['date_city_trips'],date_1,date_2,greater)
+    print('tamano arbol',tree.size(catalog['date_city_trips']))
     #print(range_list)
     #print(type(range_list))
+    print('tamano rangelist',lt.size(range_list))
     iterator_range = it.newIterator(range_list)
     while it.hasNext(iterator_range):
         Element = it.next(iterator_range)
