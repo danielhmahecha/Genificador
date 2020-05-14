@@ -27,7 +27,7 @@ from ADT import list as lt
 from ADT import stack as stk
 from ADT import orderedmap as map
 from DataStructures import listiterator as it
-
+from DataStructures import orderedmapstructure as tree
 import sys
 
 
@@ -75,6 +75,8 @@ def main():
             print("Cargando información de los archivos ....")
             catalog = initCatalog ()
             loadData (catalog)
+            t = tree.size(catalog['date_city_trips'])
+            print(t)
         elif int(inputs[0])==2:
             city = input('Ingrese nombre de la ciudad: ')
             controller.stationsByDockCount(catalog, city)
