@@ -110,7 +110,8 @@ def addDate_city_trips(catalog,row):
 
     d = row['start_date'] # row del archivo trip.csv 
     t = d.split(" ")[0]
-    date = strToDate(t,'%m-%d-%Y')
+    date = strToDate(t,'%m/%d/%Y')
+    #print(date)
     id_station = row['start_station_id']
     city_trip = tree.get(catalog['date_city_trips'],date,greater)
     #print(city_trip)
@@ -134,8 +135,8 @@ def trips_per_dates (catalog, init_date, last_date):
     # Esta es la que usamos para responder el req 2 , se devulve un dict con llaves = ciudades y value = suma de todas las cantidades
 
     response = {}
-    date_1 = strToDate(init_date, '%m-%d-%Y')
-    date_2 = strToDate(last_date, '%m-%d-%Y')
+    date_1 = strToDate(init_date, '%m/%d/%Y')
+    date_2 = strToDate(last_date, '%m/%d/%Y')
     range_list = tree.valueRange(catalog['date_city_trips'],date_1,date_2,greater)
     #print(range_list)
     #print(type(range_list))
@@ -146,7 +147,7 @@ def trips_per_dates (catalog, init_date, last_date):
         iterator_keys = it.newIterator(elkeys)
         while it.hasNext(iterator_keys):
             city = it.next(iterator_keys) 
-            count = map.get(Element,city)
+            count = map.get(Element,city)['value']
             if city in response :
                 r = response[city]
                 w = r + count

@@ -87,7 +87,7 @@ def main():
             dat2 = dates.split(" ")[1]
             r = controller.trips_per_dates(catalog,dat1,dat2)
             for city  in r:
-                print (city, r[city]['value'])
+                print (city, r[city])
 
         elif int(inputs[0])==4:
             vertices =input("Ingrese el vertice origen y destino (EJEMPLO: HNL-1-25 ICT-1-25 ) \n")
