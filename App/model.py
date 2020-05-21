@@ -55,7 +55,7 @@ def newCatalog():
     #Creamos un grafo de viajes por fecha
     trips_digraph = g.newGraph(44679,compareByKey,directed=True,datastructure="ADJ_LIST")
     #Se crea el catálogo
-    catalog = {'cities':cityStationsMap, 'stationIds': stationIdName, 'stationNames':stationNameId, 'date_city_trips':date_city_trips, 'tripsGraph': trips_digraph }    
+    catalog = {'cities':cityStationsMap, 'stationIds': stationIdName, 'date_city_trips':date_city_trips, 'tripsGraph': trips_digraph }    
     return catalog
     
 def addCityStations (catalog, row):
