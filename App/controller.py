@@ -95,6 +95,17 @@ def trips_per_dates(catalog,init,last):
     print("Tiempo de ejecución cantidad de viajes por ciudad entre fechas :",t1_stop-t1_start," segundos")
     return s 
 
+def loadEdgesFile(catalog):
+    t1_start=process_time()
+    edgesFile = cf.data_dir+'tripxday_edges/tripday_edges.csv'
+    dialect = csv.excel()
+    dialect.delimiter=';'
+    with open(edgesFile,encoding="utf-8-sig") as csvfile:
+        spamreader=csv.DictReader(csvfile, dialect=dialect)
+        for row in spamreader:
+            model.addTripDay_Edges(catalog, row)
+    t1_stop=process_time()
+    print('Tiempo de ejecución carga grafo de viajes por fechas: ',t1_stop-t1_start,' segundos')
 
 def initCatalog ():
     """
@@ -111,6 +122,7 @@ def loadData (catalog):
     """
     loadStationsFile(catalog)  
     load_tripFile(catalog)
+    loadEdgesFile(catalog)
     
 
 # Funciones llamadas desde la vista y enviadas al modelo
@@ -123,9 +135,9 @@ def countNodesEdges_non_directed(catalog):
     
     return nodes, edges
 
-def countNodesEdges_directed(catalog):
+def countNodesEdgesGraph(catalog):
     
-    nodes, edges = model.countNodesEdges_directed(catalog)
+    nodes, edges = model.countNodesEdgesGraph(catalog)
     
     return nodes, edges
 

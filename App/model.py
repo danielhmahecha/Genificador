@@ -49,10 +49,13 @@ def newCatalog():
     cityStationsMap = map.newMap(capacity=5, prime=3,maptype='CHAINING',comparefunction=compareByKey)
     #Creamos un mapa de nombres de estaciones indexadas por Id de estación, para facilitar la carga de los datos de los otros archivos
     stationIdName = map.newMap(capacity=70, prime=37, maptype='CHAINING',comparefunction=compareByKey)
+    #stationNameId = map.newMap(capacity=70, prime=37, maptype='CHAINING',comparefunction=compareByKey)
     #Creamos un RBT indexado por fechas, el value es un map con ciudades y cantidad de viajes
     date_city_trips = tree.newMap('RBT')
+    #Creamos un grafo de viajes por fecha
+    trips_digraph = g.newGraph(44679,compareByKey,directed=True,datastructure="ADJ_LIST")
     #Se crea el catálogo
-    catalog = {'cities':cityStationsMap, 'stationIds': stationIdName, 'date_city_trips':date_city_trips }    
+    catalog = {'cities':cityStationsMap, 'stationIds': stationIdName, 'stationNames':stationNameId, 'date_city_trips':date_city_trips, 'tripsGraph': trips_digraph }    
     return catalog
     
 def addCityStations (catalog, row):
@@ -72,6 +75,9 @@ def addCityStations (catalog, row):
     stationsIdName = catalog['stationIds']
     dicct = {'Name' : row['name'], 'City': row['city']}
     map.put(stationsIdName,row['id'],dicct)
+
+    #stationsNameId = catalog['stationNames']
+    #map.put(stationNameId,row['name'],row['id'])
 
 def stationsByDockCount(catalog, city):
     try:
@@ -130,6 +136,47 @@ def addDate_city_trips(catalog,row):
         city_trip = map.newMap(capacity= 5, prime=3,maptype='CHAINING', comparefunction = compareByKey)
         map.put(city_trip,city,1)
         catalog['date_city_trips'] = tree.put(catalog['date_city_trips'],date,city_trip,greater)
+def addTripDay_Edges(catalog, row):
+    addVertex(catalog,row)
+    addEdge(catalog,row)
+def addVertex(catalog, row):
+    tripsGraph=catalog['tripsGraph']
+    if not g.containsVertex(catalog['tripsGraph'], row['src']):
+        g.insertVertex(catalog['tripsGraph'], row['src'])
+    if not g.containsVertex(catalog['tripsGraph'], row['dst']):
+        g.insertVertex(catalog['tripsGraph'],row['dst'])
+
+def addEdge(catalog, row):
+
+    if row['duration'] != "":
+        g.addEdge (catalog['tripsGraph'], row['src'], row['dst'], float(row['duration']))
+
+def countNodesEdgesGraph(catalog):
+    """
+    Retorna la cantidad de nodos y enlaces del grafo de bibliotecas
+    """
+    tripsGraph=catalog['tripsGraph']
+    nodes = g.numVertex(tripsGraph)
+    edges = g.numEdges(tripsGraph)
+
+    return nodes,edges
+
+def getShortestPath (catalog, source, dst):
+    """
+    Retorna el camino de menor costo entre vertice origen y destino, si existe 
+    """
+    graph = catalog['tripsGraph']
+    print("vertices: ",source,", ",dst)
+    if g.containsVertex(graph, source) and g.containsVertex(graph, dst):
+        dijks = dk.newDijkstra(graph,source)
+        if dk.hasPathTo(dijks, dst):
+            path = dk.pathTo(dijks,dst)
+        else:
+            path = 'No hay camino'
+    else:
+        path = 'No existen los vértices'
+
+    return path
 
 def trips_per_dates (catalog, init_date, last_date):
     # Esta es la que usamos para responder el req 2 , se devulve un dict con llaves = ciudades y value = suma de todas las cantidades
@@ -248,7 +295,7 @@ def getShortestPath (catalog, source, dst):
     """
     Retorna el camino de menor costo entre vertice origen y destino, si existe 
     """
-    graph = catalog['directed_Graph']
+    graph = catalog['tripsGraph']
     print("vertices: ",source,", ",dst)
     if g.containsVertex(graph, source) and g.containsVertex(graph, dst):
         dijks = dk.newDijkstra(graph,source)
