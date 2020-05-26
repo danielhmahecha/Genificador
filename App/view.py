@@ -92,18 +92,8 @@ def main():
                 print (city, r[city])
 
         elif int(inputs[0])==4:
-            vertices =input("Ingrese el vertice origen y destino (EJEMPLO: HNL-1-25 ICT-1-25 ) \n")
-            lst = controller.getPath(catalog,vertices,'dfs')
-            print("El camino entre los vertices es:")
-            if lst is not None:
-                lst_it = it.newIterator(lst)
-                route=''
-                while it.hasNext(lst_it):
-                    city = it.next(lst_it)
-                    route += city + " "
-                print (route)
-            else:
-                print('\nNo hay camino para los vértices ingresados\n')
+            r = catalog['list_temperature']
+            print(r)
             
         elif int(inputs[0])==5:
             vertices =input("Ingrese el vertice origen y destino. (Ejemplo: '48-2014-2-27 66-2014-2-27')\n")
@@ -119,19 +109,7 @@ def main():
                     print (step['vertexA'] + "-->" + step['vertexB'] + " costo: " + str(step['weight']))
                 print ("Total: " + str (totalDist))
             
-        elif int(inputs[0])==6:
-            vertices =input("Ingrese el vertice origen y destino. (Ejemplo: 'ALB-5-12 LAX-5-12')\n")
-            path = controller.getShortestPath(catalog,vertices)
-            if path == 'No hay camino' or path == 'No existen los vértices':
-                print (path)
-            else:
-                print("El camino de menor costo entre los vertices es:")
-                totalDist = 0
-                while not stk.isEmpty (path): 
-                    step = stk.pop(path)
-                    totalDist += step['weight']
-                    print (step['vertexA'] + "-->" + step['vertexB'] + " costo: " + str(step['weight']))
-                print ("Costo Total: " + str (totalDist))
+        
         else:
             sys.exit(0)
     sys.exit(0)

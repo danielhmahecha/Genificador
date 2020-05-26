@@ -52,12 +52,36 @@ def newCatalog():
     #stationNameId = map.newMap(capacity=70, prime=37, maptype='CHAINING',comparefunction=compareByKey)
     #Creamos un RBT indexado por fechas, el value es un map con ciudades y cantidad de viajes
     date_city_trips = tree.newMap('RBT')
+    #Creamos una lista para que contiene dia, temperatura y cantidad de viajes en ese dia 
+    list_temperature = lt.newList('ARRAY_LIST')
     #Creamos un grafo de viajes por fecha
     trips_digraph = g.newGraph(44679,compareByKey,directed=True,datastructure="ADJ_LIST")
     #Se crea el catálogo
-    catalog = {'cities':cityStationsMap, 'stationIds': stationIdName, 'date_city_trips':date_city_trips, 'tripsGraph': trips_digraph }    
+    catalog = {'cities':cityStationsMap, 'stationIds': stationIdName, 'date_city_trips':date_city_trips, 'list_temperature':list_temperature, 'tripsGraph': trips_digraph }    
     return catalog
-    
+
+def addDate_temperature (catalog,row):
+    dicc_date = {}
+    value = 0
+    a = (row['date']).split(sep="-")
+    temperature = float(row['mean_temperature_f'])
+    date_string = str(a[1]) + '/'+str(a[2])+'/'+str(a[0])
+    date = strToDate(date_string, "%m/%d/%Y")
+    w = tree.get(catalog['date_city_trips'],date,greater)
+    keys = map.keySet(w)
+    keysIterator = it.newIterator(keys)
+    while it.hasNext(keysIterator):
+        city = it.next(keysIterator)
+        count = int(map.get(w,city)['value'])
+        value += count
+    dicc_date = {'Date':date_string,'Temperature':temperature,'Cantidad_viajes': value}
+    lt.addLast(catalog['list_temperature'],dicc_date)
+
+def sortDate_temperature(catalog):
+    list_temp = catalog['list_temperature']
+    mergesort.mergesort(list_temp,compareTemperatureGreater)
+
+
 def addCityStations (catalog, row):
     #Vamos actualizando el mapa de ciudades, añadiendo la estación a la ciudad respectiva
     cityStationsMap = catalog['cities']
@@ -136,11 +160,12 @@ def addDate_city_trips(catalog,row):
         city_trip = map.newMap(capacity= 5, prime=3,maptype='CHAINING', comparefunction = compareByKey)
         map.put(city_trip,city,1)
         catalog['date_city_trips'] = tree.put(catalog['date_city_trips'],date,city_trip,greater)
+
 def addTripDay_Edges(catalog, row):
     addVertex(catalog,row)
     addEdge(catalog,row)
+
 def addVertex(catalog, row):
-    tripsGraph=catalog['tripsGraph']
     if not g.containsVertex(catalog['tripsGraph'], row['src']):
         g.insertVertex(catalog['tripsGraph'], row['src'])
     if not g.containsVertex(catalog['tripsGraph'], row['dst']):
@@ -291,7 +316,7 @@ def getPath (catalog, source, dest, strct):
 
 
 
-def getShortestPath (catalog, source, dst):
+def getShortestPath_6 (catalog, source, dst):
     """
     Retorna el camino de menor costo entre vertice origen y destino, si existe 
     """
@@ -318,6 +343,10 @@ def compareDockCountGreater( element1, element2):
         if int(element1['dock_count']) >  int(element2['dock_count']):
             return True
         return False
+def compareTemperatureGreater (element1, element2):
+    if float(element1['Temperature']) > float(element2['Temperature']):
+        return True
+    return False  
 
 def compareByKey (key, element):
     return  (key == element['key'] ) 

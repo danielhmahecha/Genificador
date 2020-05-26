@@ -107,6 +107,23 @@ def loadEdgesFile(catalog):
     t1_stop=process_time()
     print('Tiempo de ejecución carga grafo de viajes por fechas: ',t1_stop-t1_start,' segundos')
 
+def loadTemperatureFile (catalog):
+    """
+    Carga las temperaturas del archivo.
+    Se almacena una lista con la info necesaria para el req 3 
+    """
+    t1_start = process_time() #tiempo inicial
+    stationsFile = cf.data_dir + 'bikes_data/weather.csv'
+    dialect = csv.excel()
+    dialect.delimiter=','
+    with open(stationsFile, encoding="utf-8-sig") as csvfile:
+        spamreader = csv.DictReader(csvfile, dialect=dialect)
+        for row in spamreader:
+            model.addDate_temperature(catalog,row)
+    model.sortDate_temperature(catalog)      
+    t1_stop = process_time() #tiempo final
+    print("Tiempo de ejecución carga archivo de temperaturas:",t1_stop-t1_start," segundos")  
+
 def initCatalog ():
     """
     Llama la funcion de inicializacion del catalogo del modelo.
@@ -122,6 +139,7 @@ def loadData (catalog):
     """
     loadStationsFile(catalog)  
     load_tripFile(catalog)
+    loadTemperatureFile(catalog)
     loadEdgesFile(catalog)
     
 
