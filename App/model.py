@@ -61,6 +61,9 @@ def newCatalog():
     return catalog
 
 def addDate_temperature (catalog,row):
+    '''
+    Función que crea una lista de diccionarios de fechas con la temperatura y la cantidad de viajes asociada a partir del árbol de fechas
+    '''
     dicc_date = {}
     value = 0
     a = (row['date']).split(sep="-")
@@ -78,9 +81,16 @@ def addDate_temperature (catalog,row):
     lt.addLast(catalog['list_temperature'],dicc_date)
 
 def sortDate_temperature(catalog):
+    '''
+    Función que ordena la lista de diccionarios con fecha, temperatura y cantidad de viajes, usando fecha como criterio de ordenamiento. 
+    '''
     list_temp = catalog['list_temperature']
     mergesort.mergesort(list_temp,compareTemperatureGreater)
+
 def consulta_temperature(catalog, n):
+    '''
+    Función que devuelve los N días con la mayor y menor temperatura
+    '''
     N = int(n)
     list_temperatures = catalog['list_temperature']
     response_max = lt.newList('ARRAY_LIST')
@@ -95,6 +105,10 @@ def consulta_temperature(catalog, n):
     return (response_max,response_min)
 
 def addCityStations (catalog, row):
+    '''
+    Función que va construyendo un mapa de ciudades, añadiendo a cada ciudad una lista con sus estaciones respectivas. 
+    Cada estación contiene un diccionario con su ID, Nombre, y Dock Count.
+    '''
     #Vamos actualizando el mapa de ciudades, añadiendo la estación a la ciudad respectiva
     cityStationsMap = catalog['cities']
     station = {'id': row['id'], 'name': row['name'], 'dock_count': row['dock_count']}
@@ -116,6 +130,9 @@ def addCityStations (catalog, row):
     #map.put(stationNameId,row['name'],row['id'])
 
 def stationsByDockCount(catalog, city):
+    '''
+    Función que retorna las 3 estaciones con más Dock Count para una ciudad que entra como input
+    '''
     try:
         ans = lt.newList()
         cityStationsMap = catalog['cities']
@@ -130,6 +147,9 @@ def stationsByDockCount(catalog, city):
     except: print('Ciudad no encontrada')
 
 def sortCityStations(catalog):
+    '''
+    Función que ordena la lista de estaciones para cada ciudad por dock cont de mayor a menor
+    '''
     #Iteramos sobre toda las ciudades para ir ordenando las listas de estaciones por dock_count
     cityStationsMap = catalog['cities']
     citiesList = map.keySet(cityStationsMap)
@@ -140,6 +160,9 @@ def sortCityStations(catalog):
         mergesort.mergesort(stationsList,compareDockCountGreater)
 
 def station_id_city (catalog,station_id) :
+    '''
+    Función que devuelve la ciudad en la que está ubicada una estación, recibiendo como input el id de la estación
+    '''
     # Funcion auxiliar a addDate_city_trips que me devuelve la ciudad a partir del id de una estacion 
     stations_ids = catalog['stationIds']
     y = map.get(stations_ids,station_id)
@@ -148,6 +171,9 @@ def station_id_city (catalog,station_id) :
 
 
 def addDate_city_trips(catalog,row):
+    '''
+    Función que construye el árbol RBT de fechas. Cada nodo del árbol es a su vez un mapa de hash con cantidad de viajes indexados por ciudad
+    '''
     # Añadimos las fechas al RBT con un value igual a un map con ciudad y values =  cantidad de viajes
 
     d = row['start_date'] # row del archivo trip.csv 
@@ -174,23 +200,31 @@ def addDate_city_trips(catalog,row):
         catalog['date_city_trips'] = tree.put(catalog['date_city_trips'],date,city_trip,greater)
 
 def addTripDay_Edges(catalog, row):
+    '''
+    Función que va creando un grafo dirigido de viajes añadiendo cada vértice y eje 
+    '''
     addVertex(catalog,row)
     addEdge(catalog,row)
 
 def addVertex(catalog, row):
+    '''
+    Función que añade los vértices al grafo de viajes si no existen
+    '''
     if not g.containsVertex(catalog['tripsGraph'], row['src']):
         g.insertVertex(catalog['tripsGraph'], row['src'])
     if not g.containsVertex(catalog['tripsGraph'], row['dst']):
         g.insertVertex(catalog['tripsGraph'],row['dst'])
 
 def addEdge(catalog, row):
-
+    '''
+    Función que añade los ejes al grafo de viajes
+    '''
     if row['duration'] != "":
         g.addEdge (catalog['tripsGraph'], row['src'], row['dst'], float(row['duration']))
 
 def countNodesEdgesGraph(catalog):
     """
-    Retorna la cantidad de nodos y enlaces del grafo de bibliotecas
+    Retorna la cantidad de nodos y enlaces del grafo de viajes
     """
     tripsGraph=catalog['tripsGraph']
     nodes = g.numVertex(tripsGraph)
@@ -216,6 +250,9 @@ def getShortestPath (catalog, source, dst):
     return path
 
 def trips_per_dates (catalog, init_date, last_date):
+    '''
+    Función que responde el requerimiento 2; para un rango de fechas devuelve la cantidad de viajes totales por ciudad
+    '''
     # Esta es la que usamos para responder el req 2 , se devulve un dict con llaves = ciudades y value = suma de todas las cantidades
 
     response = {}
@@ -241,114 +278,6 @@ def trips_per_dates (catalog, init_date, last_date):
                 
     return response
 
-
-def addReviewNode_non_directed (catalog, row):
-    """
-    Adiciona un nodo para almacenar un libro o usuario 
-    """
-    if not g.containsVertex(catalog['non_directed_Graph'], row['SOURCE']):
-        g.insertVertex (catalog['non_directed_Graph'], row['SOURCE'])
-    if not g.containsVertex(catalog['non_directed_Graph'], row['DEST']):
-        g.insertVertex (catalog['non_directed_Graph'], row['DEST'])
-
-def addReviewEdge_non_directed (catalog, row):
-    """
-    Adiciona un enlace para almacenar una revisión
-    """
-    if row['AIR_TIME'] != "":
-        g.addEdge (catalog['non_directed_Graph'], row['SOURCE'], row['DEST'], float(row['AIR_TIME']))
-
-
-def addReviewNode_directed (catalog, row):
-    """
-    Adiciona un nodo para almacenar un libro o usuario 
-    """
-    if not g.containsVertex(catalog['directed_Graph'], row['SOURCE']):
-        g.insertVertex (catalog['directed_Graph'], row['SOURCE'])
-    if not g.containsVertex(catalog['directed_Graph'], row['DEST']):
-        g.insertVertex (catalog['directed_Graph'], row['DEST'])
-
-def addReviewEdge_directed (catalog, row):
-    """
-    Adiciona un enlace para almacenar una revisión
-    """
-    if row['AIR_TIME'] != "":
-        g.addEdge (catalog['directed_Graph'], row['SOURCE'], row['DEST'], float(row['AIR_TIME']))
-
-
-def countNodesEdges_non_directed (catalog):
-    """
-    Retorna la cantidad de nodos y enlaces del grafo de bibliotecas
-    """
-    nodes = g.numVertex(catalog['non_directed_Graph'])
-    edges = g.numEdges(catalog['non_directed_Graph'])
-
-    return nodes,edges
-def countNodesEdges_directed (catalog):
-    """
-    Retorna la cantidad de nodos y enlaces del grafo de bibliotecas
-    """
-    nodes = g.numVertex(catalog['directed_Graph'])
-    edges = g.numEdges(catalog['directed_Graph'])
-
-    return nodes,edges
-
-def componentes_conectados(catalog):
-    counter = 0
-    grafo = catalog['non_directed_Graph']
-    vertices = g.vertices(grafo)
-    graph_iter = it.newIterator (vertices)
-    m = map.newMap(capacity= 55681,maptype='CHAINING',comparefunction=grafo['comparefunction']) 
-    while (it.hasNext (graph_iter)):
-        n = it.next (graph_iter)
-        visited_w = map.get(m, n)
-        if visited_w == None :
-            dfs.newDFS_2(grafo,n,m)
-            counter += 1
-    return counter
-
-def getPath (catalog, source, dest, strct):
-    """
-    Retorna el camino, si existe, entre vertice origen y destino
-    """
-    path = None
-    if g.containsVertex(catalog['non_directed_Graph'],source) and g.containsVertex(catalog['non_directed_Graph'],dest):
-        #print("vertices: ",source,", ", dest)
-        if strct == 'dfs':
-            search = dfs.newDFS(catalog['non_directed_Graph'],source)
-            path = dfs.pathTo(search,dest)
-        if strct == 'bfs':
-            search = bfs.newBFS(catalog['non_directed_Graph'],source)
-            path = bfs.pathTo(search, dest)
-    # ejecutar dfs desde source
-    # obtener el camino hasta dst
-    # retornar el camino
-
-    return path
-
-
-
-def getShortestPath_6 (catalog, source, dst):
-    """
-    Retorna el camino de menor costo entre vertice origen y destino, si existe 
-    """
-    graph = catalog['tripsGraph']
-    print("vertices: ",source,", ",dst)
-    if g.containsVertex(graph, source) and g.containsVertex(graph, dst):
-        dijks = dk.newDijkstra(graph,source)
-        if dk.hasPathTo(dijks, dst):
-            path = dk.pathTo(dijks,dst)
-        else:
-            path = 'No hay camino'
-    else:
-        path = 'No existen los vértices'
-
-    return path
-    # ejecutar Dijkstra desde source
-    # obtener el camino hasta dst
-    # retornar el camino
-    
-   # return None
     
 # Funciones de comparacion
 def compareDockCountGreater( element1, element2):

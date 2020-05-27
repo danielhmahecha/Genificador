@@ -40,13 +40,12 @@ operación solicitada
 
 
 def printMenu():
-    print("Bienvenido al Laboratorio 9")
+    print("Bienvenido al Proyecto Final")
     print("1- Cargar información")
     print("2- Req 1 ")
     print("3- Req 2")
     print("4- Req 3")
     print("5- Req 4")
-    print("6- Nada")
     print("0- Salir")
 
 
@@ -76,7 +75,7 @@ def main():
             catalog = initCatalog ()
             loadData (catalog)
             t = tree.size(catalog['date_city_trips'])
-            print('Arbol',t)
+            print('Arbol numero de nodos',t)
             g = controller.countNodesEdgesGraph(catalog)
             print('Vertices grafo: ',g[0],' Ejes grafo: ',g[1])
         elif int(inputs[0])==2:

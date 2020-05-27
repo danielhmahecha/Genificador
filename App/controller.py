@@ -152,36 +152,12 @@ def loadData (catalog):
 
 # Funciones llamadas desde la vista y enviadas al modelo
 
-
-def countNodesEdges_non_directed(catalog):
-    
-    nodes, edges = model.countNodesEdges_non_directed(catalog)
-   
-    
-    return nodes, edges
-
 def countNodesEdgesGraph(catalog):
     
     nodes, edges = model.countNodesEdgesGraph(catalog)
     
     return nodes, edges
-
-def countConnectedComponents(catalog):
-    t1_start = process_time() #tiempo inicial
-    ccs = model.componentes_conectados(catalog) 
-    t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución de conteo de componentes conectados:",t1_stop-t1_start," segundos")
-    return ccs
-
-def getPath(catalog, vertices, strct):
-    t1_start = process_time() #tiempo inicial
-    source=vertices.split(" ")[0]
-    dst=vertices.split(" ")[1]
-    path = model.getPath(catalog, source, dst,strct)
-    t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución de ",strct," ",t1_stop-t1_start," segundos")
-    return path
-
+    
 def getShortestPath(catalog, vertices):
     t1_start = process_time() #tiempo inicial
     source=vertices.split(" ")[0]
