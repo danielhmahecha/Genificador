@@ -80,7 +80,19 @@ def addDate_temperature (catalog,row):
 def sortDate_temperature(catalog):
     list_temp = catalog['list_temperature']
     mergesort.mergesort(list_temp,compareTemperatureGreater)
-
+def consulta_temperature(catalog, n):
+    N = int(n)
+    list_temperatures = catalog['list_temperature']
+    response_max = lt.newList('ARRAY_LIST')
+    response_min = lt.newList('ARRAY_LIST')
+    for i in range(1,N+1) :
+        g = lt.getElement(list_temperatures,i)
+        lt.addLast(response_max,g)
+    s = int(lt.size(list_temperatures))
+    for i in range(s-N,s):
+        f = lt.getElement(list_temperatures,i)
+        lt.addFirst(response_min,f)
+    return (response_max,response_min)
 
 def addCityStations (catalog, row):
     #Vamos actualizando el mapa de ciudades, añadiendo la estación a la ciudad respectiva

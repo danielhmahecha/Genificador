@@ -92,9 +92,18 @@ def main():
                 print (city, r[city])
 
         elif int(inputs[0])==4:
-            r = catalog['list_temperature']
-            print(r)
-            
+            n = input("Ingrese el N : ")
+            f = controller.consulta_temperatures(catalog,n)
+            maximos = f[0]
+            minimos = f[1]
+            print("Los " + n + " con mayor temperatura promedio son :\n")
+            for i in (maximos['elements']):
+                print(i)
+            print("Los "+n+" con menor termperatura promedio son : \n")
+            for j in (minimos['elements']):
+                print(j)
+
+
         elif int(inputs[0])==5:
             vertices =input("Ingrese el vertice origen y destino. (Ejemplo: '48-2014-2-27 66-2014-2-27')\n")
             path = controller.getShortestPath(catalog,vertices)

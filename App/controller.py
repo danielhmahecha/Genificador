@@ -124,6 +124,13 @@ def loadTemperatureFile (catalog):
     t1_stop = process_time() #tiempo final
     print("Tiempo de ejecución carga archivo de temperaturas:",t1_stop-t1_start," segundos")  
 
+def consulta_temperatures (catalog,n):
+    t1_start = process_time()
+    s = model.consulta_temperature(catalog,n)
+    t1_stop = process_time()
+    print("Tiempo de ejecución de consulta por temperaturas :",t1_stop-t1_start," segundos")
+    return s 
+
 def initCatalog ():
     """
     Llama la funcion de inicializacion del catalogo del modelo.
